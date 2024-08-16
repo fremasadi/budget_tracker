@@ -59,7 +59,9 @@ class HistoryTransactionView extends GetView<HistoryTransactionController> {
         ),
         centerTitle: true,
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Get.back();
+          },
           icon: Icon(
             Icons.arrow_back_ios,
             size: 28.sp,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../data/helper/database_helper.dart';
+import '../../../data/models/category.dart';
 
 class AddCategoriesView extends StatefulWidget {
   const AddCategoriesView({super.key});
@@ -10,7 +11,7 @@ class AddCategoriesView extends StatefulWidget {
 }
 
 class _AddCategoriesViewState extends State<AddCategoriesView> {
-  String categoryName = '';
+  final TextEditingController _categoryNameController = TextEditingController();
   int selectedColor = 0xFFFFA500;
   int selectedIcon = 0;
 
@@ -33,21 +34,39 @@ class _AddCategoriesViewState extends State<AddCategoriesView> {
     Icons.work,
   ];
 
+  final DatabaseHelper _dbHelper = DatabaseHelper();
+
+  @override
+  void dispose() {
+    _categoryNameController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Category'),
+        title: const Text('Add Category'),
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
             onPressed: () async {
-              await DatabaseHelper().insertCategory({
-                'name': categoryName,
-                'iconIndex': selectedIcon,
-                'colorValue': selectedColor,
-              });
-              Get.back(); // Go back to the previous screen after saving
+              String categoryName = _categoryNameController.text.trim();
+              if (categoryName.isNotEmpty) {
+                Category newCategory = Category(
+                  name: categoryName,
+                  color: selectedColor,
+                  icon: selectedIcon,
+                );
+                await _dbHelper.insertCategory(newCategory);
+                Get.back();  // Kembali ke halaman sebelumnya setelah menyimpan
+              } else {
+                Get.snackbar(
+                  'Error',
+                  'Category name cannot be empty!',
+                  snackPosition: SnackPosition.BOTTOM,
+                );
+              }
             },
           ),
         ],
@@ -58,17 +77,23 @@ class _AddCategoriesViewState extends State<AddCategoriesView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextField(
-                onChanged: (value) {
-                  setState(() {
-                    categoryName = value;
-                  });
-                },
-                decoration: const InputDecoration(
-                  labelText: 'Category Name',
-                ),
-              ),
+CircleAvatar(
+                    backgroundColor: Color(selectedColor),
+                    radius: 25,
+                    child: Icon(
+                      iconsList[selectedIcon],
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                  ),        
+                      TextFormField(
+                      controller: _categoryNameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Category Name',
+                      ),
+                    ),
               const SizedBox(height: 16),
+              // Pilihan warna
               Wrap(
                 spacing: 8,
                 children: availableColors.map((color) {
@@ -88,6 +113,7 @@ class _AddCategoriesViewState extends State<AddCategoriesView> {
                 }).toList(),
               ),
               const SizedBox(height: 16),
+              // Pilihan ikon
               SizedBox(
                 height: 200,
                 child: GridView.builder(

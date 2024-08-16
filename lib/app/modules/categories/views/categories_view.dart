@@ -1,9 +1,9 @@
 import 'package:budget_tracker/app/modules/categories/views/add_categories_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
-
+import 'package:get/get.dart';
+import '../../../data/helper/database_helper.dart';
+import '../../../data/models/category.dart';
 import '../../../styles/app_colors.dart';
 import '../../../styles/app_fonts.dart';
 
@@ -24,19 +24,17 @@ class _CategoriesViewState extends State<CategoriesView> {
     Icons.work,
   ];
 
-  List<Map<String, dynamic>> categories = [];
+  List<Category> categories = [];
+  final DatabaseHelper _dbHelper = DatabaseHelper();
 
   @override
   void initState() {
     super.initState();
-    loadCategories();
+    _loadCategories(); // Memuat kategori saat inisialisasi
   }
 
-  Future<void> loadCategories() async {
-    Database db = await openDatabase(
-      join(await getDatabasesPath(), 'categories.db'),
-    );
-    final List<Map<String, dynamic>> data = await db.query('categories');
+  Future<void> _loadCategories() async {
+    final data = await _dbHelper.getCategories();
     setState(() {
       categories = data;
     });
@@ -67,11 +65,9 @@ class _CategoriesViewState extends State<CategoriesView> {
         actions: [
           IconButton(
             onPressed: () async {
-              await Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) => const AddCategoriesView()),
-              );
-              loadCategories(); // Reload categories after returning from AddCategoriesView
+              // Navigasi ke halaman tambah kategori dan refresh setelah kembali
+              await Get.to(() => const AddCategoriesView());
+              _loadCategories(); // Refresh list kategori setelah kembali dari AddCategoriesView
             },
             icon: Row(
               children: [
@@ -102,13 +98,13 @@ class _CategoriesViewState extends State<CategoriesView> {
                       var category = categories[index];
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: Color(category['colorValue']),
+                          backgroundColor: Color(category.color),
                           child: Icon(
-                            iconsList[category['iconIndex']],
+                            iconsList[category.icon],
                             color: Colors.white,
                           ),
                         ),
-                        title: Text(category['name']),
+                        title: Text(category.name),
                       );
                     },
                   )

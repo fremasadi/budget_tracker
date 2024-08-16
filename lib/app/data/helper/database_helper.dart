@@ -1,13 +1,14 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import '../models/category.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
-
   factory DatabaseHelper() => _instance;
-  static Database? _database;
 
   DatabaseHelper._internal();
+
+  static Database? _database;
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -17,43 +18,58 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'categories.db');
-    return await openDatabase(
+    return openDatabase(
       path,
-      version: 2, // Increment the version if you modify the schema
-      onCreate: (db, version) async {
-        await db.execute('''
-        CREATE TABLE categories(
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT NOT NULL,
-          iconIndex INTEGER NOT NULL,
-          colorValue INTEGER NOT NULL
-        )
-      ''');
+      onCreate: (db, version) {
+        return db.execute(
+          '''
+          CREATE TABLE categories(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            color INTEGER,
+            icon INTEGER
+          )
+          ''',
+        );
       },
-      onUpgrade: (db, oldVersion, newVersion) async {
-        // Handle database upgrades if schema changes
-      },
+      version: 1,
     );
   }
 
-  Future _onCreate(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE categories (
-        id INTEGER PRIMARY KEY,
-        name TEXT,
-        iconIndex INTEGER,
-        colorValue INTEGER
-      )
-    ''');
+  Future<void> insertCategory(Category category) async {
+    final db = await database;
+    await db.insert(
+      'categories',
+      category.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
-  Future<int> insertCategory(Map<String, dynamic> category) async {
-    Database db = await database;
-    return await db.insert('categories', category);
+  Future<List<Category>> getCategories() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('categories');
+
+    return List.generate(maps.length, (i) {
+      return Category.fromMap(maps[i]);
+    });
   }
 
-  Future<List<Map<String, dynamic>>> getCategories() async {
-    Database db = await database;
-    return await db.query('categories');
+  Future<void> updateCategory(Category category) async {
+    final db = await database;
+    await db.update(
+      'categories',
+      category.toMap(),
+      where: 'id = ?',
+      whereArgs: [category.id],
+    );
+  }
+
+  Future<void> deleteCategory(int id) async {
+    final db = await database;
+    await db.delete(
+      'categories',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }
