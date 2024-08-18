@@ -2,11 +2,9 @@ import 'package:budget_tracker/app/modules/AddTransaction/components/add_income.
 import 'package:budget_tracker/app/styles/app_colors.dart';
 import 'package:budget_tracker/app/styles/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-
+import '../../categories/views/add_categories_view.dart';
 import '../components/add_expense.dart';
 import '../controllers/add_transaction_controller.dart';
 
@@ -15,6 +13,7 @@ class AddTransactionView extends GetView<AddTransactionController> {
 
   @override
   Widget build(BuildContext context) {
+    controller.loadCategories();
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -39,6 +38,18 @@ class AddTransactionView extends GetView<AddTransactionController> {
             ),
           ),
           centerTitle: true,
+          actions: [
+            TextButton(
+                onPressed: () {
+                  controller.saveTransaction();
+                },
+                child: Text(
+                  'Save',
+                  style: AppFonts.semiBold.copyWith(
+                    fontSize: 16.sp,
+                  ),
+                ))
+          ],
         ),
         body: Column(
           children: [
@@ -54,6 +65,9 @@ class AddTransactionView extends GetView<AddTransactionController> {
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(20.0),
                 ),
+                onTap: (index) {
+                  controller.selectedTab.value = index;
+                },
                 tabs: [
                   Tab(
                     child: Row(

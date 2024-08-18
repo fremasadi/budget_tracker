@@ -14,6 +14,8 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    controller.loadTransactions();
+    controller.loadCategory();
     return Scaffold(
       floatingActionButton: Container(
         decoration: BoxDecoration(
@@ -103,13 +105,13 @@ class HomeView extends GetView<HomeController> {
                           height: 6.h,
                         ),
                         Center(
-                          child: Text(
-                            '\$6.890.000',
-                            style: AppFonts.extraBold.copyWith(
-                              fontSize: 32.sp,
-                              color: AppColors.white,
-                            ),
-                          ),
+                          child: Obx(() => Text(
+                                '\$${controller.formatNumber(controller.totalBalance)}',
+                                style: AppFonts.extraBold.copyWith(
+                                  fontSize: 32.sp,
+                                  color: AppColors.white,
+                                ),
+                              )),
                         ),
                         SizedBox(
                           height: 18.h,
@@ -146,13 +148,13 @@ class HomeView extends GetView<HomeController> {
                                         color: AppColors.white,
                                       ),
                                     ),
-                                    Text(
-                                      '\$1.000.000',
-                                      style: AppFonts.extraBold.copyWith(
-                                        fontSize: 14.sp,
-                                        color: AppColors.white,
-                                      ),
-                                    ),
+                                    Obx(() => Text(
+                                          '\$${controller.formatNumber(controller.totalExpenses)}',
+                                          style: AppFonts.extraBold.copyWith(
+                                            fontSize: 14.sp,
+                                            color: AppColors.white,
+                                          ),
+                                        )),
                                   ],
                                 )
                               ],
@@ -186,13 +188,13 @@ class HomeView extends GetView<HomeController> {
                                         color: AppColors.white,
                                       ),
                                     ),
-                                    Text(
-                                      '\$1.000.000',
-                                      style: AppFonts.extraBold.copyWith(
-                                        fontSize: 14.sp,
-                                        color: AppColors.white,
-                                      ),
-                                    ),
+                                    Obx(() => Text(
+                                          '\$${controller.formatNumber(controller.totalIncome)}',
+                                          style: AppFonts.extraBold.copyWith(
+                                            fontSize: 14.sp,
+                                            color: AppColors.white,
+                                          ),
+                                        )),
                                   ],
                                 )
                               ],
@@ -207,7 +209,7 @@ class HomeView extends GetView<HomeController> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(left: 20.0.sp, bottom: 20.sp),
+            padding: EdgeInsets.only(left: 20.0.sp),
             child: Text(
               'Expenses In Month',
               style: AppFonts.regular.copyWith(
@@ -217,12 +219,34 @@ class HomeView extends GetView<HomeController> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: 20,
-              itemBuilder: (context, index) {
-                return HistoryCard();
-              },
-            ),
+            child: Obx(() {
+              // Filter transactions to include only those with type 'expense'
+              final expenses = controller.transactions
+                  .where((transaction) => transaction.type == 'expense')
+                  .toList();
+
+              return ListView.builder(
+                padding: EdgeInsets.zero,
+                itemCount: expenses.length,
+                itemBuilder: (context, index) {
+                  final transaction = expenses[index];
+                  final category =
+                      controller.getCategoryByName(transaction.categoryName);
+
+                  if (category == null) {
+                    // Jika kategori tidak ditemukan, tampilkan error atau placeholder
+                    return const ListTile(
+                      title: Text('Category not found'),
+                    );
+                  }
+
+                  return HistoryCard(
+                    transaction: transaction,
+                    category: category!,
+                  );
+                },
+              );
+            }),
           ),
         ],
       ),

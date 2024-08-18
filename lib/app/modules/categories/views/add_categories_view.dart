@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import '../../../data/entities/icon_list.dart';
 import '../../../data/helper/database_helper.dart';
 import '../../../data/models/category.dart';
+import '../../../styles/app_colors.dart';
+import '../../../styles/app_fonts.dart';
 
 class AddCategoriesView extends StatefulWidget {
   const AddCategoriesView({super.key});
@@ -12,10 +16,11 @@ class AddCategoriesView extends StatefulWidget {
 
 class _AddCategoriesViewState extends State<AddCategoriesView> {
   final TextEditingController _categoryNameController = TextEditingController();
-  int selectedColor = 0xFFFFA500;
+  int selectedColor = 0xff000000;
   int selectedIcon = 0;
 
   final List<Color> availableColors = [
+    Colors.black,
     Colors.orange,
     Colors.blue,
     Colors.purple,
@@ -23,15 +28,6 @@ class _AddCategoriesViewState extends State<AddCategoriesView> {
     Colors.grey,
     Colors.brown,
     Colors.red,
-  ];
-
-  final List<IconData> iconsList = [
-    Icons.home,
-    Icons.shopping_cart,
-    Icons.car_rental,
-    Icons.restaurant,
-    Icons.school,
-    Icons.work,
   ];
 
   final DatabaseHelper _dbHelper = DatabaseHelper();
@@ -46,10 +42,25 @@ class _AddCategoriesViewState extends State<AddCategoriesView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Category'),
+        backgroundColor: AppColors.white,
+        title: Text(
+          'Add Categories',
+          style: AppFonts.semiBold.copyWith(
+            fontSize: 20.sp,
+          ),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            Get.back();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+            size: 22.sp,
+          ),
+        ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
+          TextButton(
             onPressed: () async {
               String categoryName = _categoryNameController.text.trim();
               if (categoryName.isNotEmpty) {
@@ -57,9 +68,10 @@ class _AddCategoriesViewState extends State<AddCategoriesView> {
                   name: categoryName,
                   color: selectedColor,
                   icon: selectedIcon,
+                  id: null,
                 );
                 await _dbHelper.insertCategory(newCategory);
-                Get.back();  // Kembali ke halaman sebelumnya setelah menyimpan
+                Get.back();
               } else {
                 Get.snackbar(
                   'Error',
@@ -68,7 +80,14 @@ class _AddCategoriesViewState extends State<AddCategoriesView> {
                 );
               }
             },
-          ),
+            child: Text(
+              'Save',
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: AppColors.black,
+              ),
+            ),
+          )
         ],
       ),
       body: SingleChildScrollView(
@@ -77,43 +96,80 @@ class _AddCategoriesViewState extends State<AddCategoriesView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-CircleAvatar(
-                    backgroundColor: Color(selectedColor),
-                    radius: 25,
-                    child: Icon(
-                      iconsList[selectedIcon],
-                      color: Colors.white,
-                      size: 30,
-                    ),
-                  ),        
-                      TextFormField(
-                      controller: _categoryNameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Category Name',
-                      ),
-                    ),
-              const SizedBox(height: 16),
-              // Pilihan warna
-              Wrap(
-                spacing: 8,
-                children: availableColors.map((color) {
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedColor = color.value;
-                      });
-                    },
-                    child: CircleAvatar(
-                      backgroundColor: color,
-                      child: selectedColor == color.value
-                          ? const Icon(Icons.check, color: Colors.white)
-                          : null,
-                    ),
-                  );
-                }).toList(),
+              Center(
+                child: Icon(
+                  iconsList[selectedIcon],
+                  color: Color(selectedColor),
+                  size: 100.sp,
+                ),
               ),
-              const SizedBox(height: 16),
-              // Pilihan ikon
+              Container(
+                padding:
+                    EdgeInsets.symmetric(vertical: 8.sp, horizontal: 20.sp),
+                margin:
+                    EdgeInsets.symmetric(horizontal: 72.sp, vertical: 20.sp),
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(50.sp),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 10,
+                      offset: const Offset(0, 4), // Posisi bayangan (x,y)
+                    ),
+                  ],
+                ),
+                child: TextFormField(
+                  controller: _categoryNameController,
+                  decoration: InputDecoration(
+                    hintText: 'Category Name',
+                    hintStyle: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 16.sp,
+                    ),
+                    border: InputBorder.none, // Menghapus underline
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(bottom: 20.0.sp),
+                child: Center(
+                  child: Text(
+                    'Select Color',
+                    style: TextStyle(fontSize: 22.sp),
+                  ),
+                ),
+              ),
+              Center(
+                child: Wrap(
+                  spacing: 8,
+                  children: availableColors.map((color) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedColor = color.value;
+                        });
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: color,
+                        child: selectedColor == color.value
+                            ? const Icon(Icons.check, color: Colors.white)
+                            : null,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(bottom: 20.0.sp, top: 20.sp),
+                child: Center(
+                  child: Text(
+                    'Select Icon',
+                    style: TextStyle(fontSize: 22.sp),
+                  ),
+                ),
+              ),
               SizedBox(
                 height: 200,
                 child: GridView.builder(
@@ -141,6 +197,7 @@ CircleAvatar(
                         ),
                         child: Icon(
                           iconsList[index],
+                          size: 22.sp,
                           color: selectedIcon == index
                               ? Colors.white
                               : Colors.black,

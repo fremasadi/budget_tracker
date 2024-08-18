@@ -1,3 +1,5 @@
+import 'package:budget_tracker/app/data/services/firebase_api.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +9,15 @@ import 'app/styles/app_colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: 'AIzaSyBy38pDp23wpl9jdiskTIal94RoXPXPWBQ',
+      appId: '1:880634012461:android:c5ba1a95c1166f1672e9a4',
+      messagingSenderId: '880634012461',
+      projectId: 'absensi-9da95',
+    ),
+  );
+  await FirebaseApi().initNotifications();
   runApp(const MyApp());
 }
 

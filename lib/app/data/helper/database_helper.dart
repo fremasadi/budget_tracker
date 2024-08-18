@@ -3,7 +3,9 @@ import 'package:path/path.dart';
 import '../models/category.dart';
 
 class DatabaseHelper {
+  // Singleton pattern
   static final DatabaseHelper _instance = DatabaseHelper._internal();
+
   factory DatabaseHelper() => _instance;
 
   DatabaseHelper._internal();
@@ -17,38 +19,55 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDatabase() async {
-    String path = join(await getDatabasesPath(), 'categories.db');
+    String path = join(await getDatabasesPath(), 'budget_tracker.db');
     return openDatabase(
       path,
-      onCreate: (db, version) {
-        return db.execute(
+      version: 1,
+      onCreate: (db, version) async {
+        // Create categories table
+        await db.execute(
           '''
-          CREATE TABLE categories(
+          CREATE TABLE categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
             color INTEGER,
             icon INTEGER
-          )
+          );
+          ''',
+        );
+
+        // Create transactions table
+        await db.execute(
+          '''
+          CREATE TABLE transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            type TEXT,
+            category_id INTEGER,
+            amount REAL,
+            date TEXT,
+            FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+          );
           ''',
         );
       },
-      version: 1,
     );
   }
 
-  Future<void> insertCategory(Category category) async {
+  // Category functions
+  Future<int> insertCategory(Category category) async {
     final db = await database;
-    await db.insert(
+    // Convert category object to a map
+    final id = await db.insert(
       'categories',
       category.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+    return id; // Kembalikan id yang dihasilkan
   }
 
   Future<List<Category>> getCategories() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('categories');
-
     return List.generate(maps.length, (i) {
       return Category.fromMap(maps[i]);
     });
@@ -68,6 +87,37 @@ class DatabaseHelper {
     final db = await database;
     await db.delete(
       'categories',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // Transaction functions
+  Future<void> saveTransaction(
+      String type, int categoryId, double amount, DateTime date) async {
+    final db = await database;
+    await db.insert('transactions', {
+      'type': type,
+      'category_id': categoryId,
+      'amount': amount,
+      'date': date.toIso8601String(),
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getTransactionsWithCategories() async {
+    final db = await database;
+    return await db.rawQuery('''
+    SELECT transactions.id, transactions.type, transactions.amount, transactions.date,
+           categories.name AS category_name, categories.color AS category_color
+    FROM transactions
+    JOIN categories ON transactions.category_id = categories.id
+  ''');
+  }
+
+  Future<void> deleteTransaction(int id) async {
+    final db = await database;
+    await db.delete(
+      'transactions',
       where: 'id = ?',
       whereArgs: [id],
     );

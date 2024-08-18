@@ -5,7 +5,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../../data/entities/icon_list.dart';
+import '../../../routes/app_pages.dart';
 import '../../../styles/app_fonts.dart';
+import '../../categories/views/add_categories_view.dart';
 import '../controllers/add_transaction_controller.dart';
 
 class AddExpenses extends StatelessWidget {
@@ -16,8 +19,110 @@ class AddExpenses extends StatelessWidget {
 
   final AddTransactionController controller;
 
+  void _showCategoryBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.all(16.0.sp),
+          decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(20),
+              )),
+          child: Obx(
+            () {
+              final categories = controller.categories;
+              if (categories.isEmpty) {
+                return Center(
+                  child: TextButton(
+                    onPressed: () async {
+                      await Get.to(() => const AddCategoriesView());
+                      // Muat ulang kategori setelah kembali dari AddCategoriesView
+                      controller.loadCategories();
+                      Navigator.pop(context); // Tutup BottomSheet
+                    },
+                    child: Text(
+                      'Add Category',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                );
+              } else {
+                return Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'List',
+                          style: AppFonts.bold.copyWith(
+                            fontSize: 16.sp,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Get.toNamed(Routes.CATEGORIES);
+                          },
+                          child: Text(
+                            'Add Category',
+                            style: AppFonts.semiBold.copyWith(
+                              fontSize: 16.sp,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: categories.length,
+                        itemBuilder: (context, index) {
+                          var category = categories[index];
+                          return ListTile(
+                            leading: Container(
+                              padding: EdgeInsets.all(8.0.sp),
+                              // Padding untuk ikon
+                              decoration: BoxDecoration(
+                                color: Color(category.color).withOpacity(0.2),
+                                shape: BoxShape
+                                    .circle, // Bentuk lingkaran untuk ikon
+                              ),
+                              child: Icon(
+                                iconsList[category.icon],
+                                color: Color(category.color), // Warna ikon
+                              ),
+                            ),
+                            title: Text(
+                              category.name,
+                              style: AppFonts.semiBold.copyWith(
+                                fontSize: 16.sp,
+                              ),
+                            ),
+                            onTap: () {
+                              controller.selectedCategory.value = category;
+                              Navigator.pop(context); // Tutup BottomSheet
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              }
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    controller.loadCategories();
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,35 +156,44 @@ class AddExpenses extends StatelessWidget {
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.0.sp),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Category',
-                  style: AppFonts.semiBold.copyWith(
-                    fontSize: 16.sp,
+            child: GestureDetector(
+              onTap: () => _showCategoryBottomSheet(context),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Category',
+                    style: AppFonts.semiBold.copyWith(
+                      fontSize: 16.sp,
+                    ),
                   ),
-                ),
-                Row(
-                  children: [
-                    Text(
-                      'Choose',
-                      style: TextStyle(
-                        fontSize: 16.sp,
+                  Row(
+                    children: [
+                      Obx(
+                        () {
+                          return Text(
+                            controller.selectedCategory.value?.name ?? 'Choose',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: controller.selectedCategory.value != null
+                                  ? AppColors.black
+                                  : AppColors.grey.withOpacity(0.7),
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(
+                        width: 8.w,
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16.sp,
                         color: AppColors.grey.withOpacity(0.7),
                       ),
-                    ),
-                    SizedBox(
-                      width: 8.w,
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 16.sp,
-                      color: AppColors.grey.withOpacity(0.7),
-                    )
-                  ],
-                )
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           Padding(
