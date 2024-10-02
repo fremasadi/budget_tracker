@@ -116,7 +116,7 @@ class _AddCategoriesViewState extends State<AddCategoriesView> {
                       color: Colors.black.withOpacity(0.1),
                       spreadRadius: 1,
                       blurRadius: 10,
-                      offset: const Offset(0, 4), // Posisi bayangan (x,y)
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
@@ -128,7 +128,7 @@ class _AddCategoriesViewState extends State<AddCategoriesView> {
                       color: Colors.grey[400],
                       fontSize: 16.sp,
                     ),
-                    border: InputBorder.none, // Menghapus underline
+                    border: InputBorder.none,
                   ),
                 ),
               ),

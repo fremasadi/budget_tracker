@@ -3,7 +3,6 @@ import 'package:path/path.dart';
 import '../models/category.dart';
 
 class DatabaseHelper {
-  // Singleton pattern
   static final DatabaseHelper _instance = DatabaseHelper._internal();
 
   factory DatabaseHelper() => _instance;
@@ -24,7 +23,6 @@ class DatabaseHelper {
       path,
       version: 1,
       onCreate: (db, version) async {
-        // Create categories table
         await db.execute(
           '''
           CREATE TABLE categories (
@@ -36,7 +34,6 @@ class DatabaseHelper {
           ''',
         );
 
-        // Create transactions table
         await db.execute(
           '''
           CREATE TABLE transactions (
@@ -53,16 +50,14 @@ class DatabaseHelper {
     );
   }
 
-  // Category functions
   Future<int> insertCategory(Category category) async {
     final db = await database;
-    // Convert category object to a map
     final id = await db.insert(
       'categories',
       category.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    return id; // Kembalikan id yang dihasilkan
+    return id;
   }
 
   Future<List<Category>> getCategories() async {
@@ -92,7 +87,6 @@ class DatabaseHelper {
     );
   }
 
-  // Transaction functions
   Future<void> saveTransaction(
       String type, int categoryId, double amount, DateTime date) async {
     final db = await database;

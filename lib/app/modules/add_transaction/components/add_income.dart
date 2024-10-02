@@ -6,13 +6,12 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../data/entities/icon_list.dart';
-import '../../../routes/app_pages.dart';
 import '../../../styles/app_fonts.dart';
 import '../../categories/views/add_categories_view.dart';
 import '../controllers/add_transaction_controller.dart';
 
-class AddExpenses extends StatelessWidget {
-  const AddExpenses({
+class AddIncome extends StatelessWidget {
+  const AddIncome({
     super.key,
     required this.controller,
   });
@@ -27,7 +26,7 @@ class AddExpenses extends StatelessWidget {
           padding: EdgeInsets.all(16.0.sp),
           decoration: BoxDecoration(
               color: AppColors.white,
-              borderRadius: BorderRadius.vertical(
+              borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(20),
               )),
           child: Obx(
@@ -38,9 +37,8 @@ class AddExpenses extends StatelessWidget {
                   child: TextButton(
                     onPressed: () async {
                       await Get.to(() => const AddCategoriesView());
-                      // Muat ulang kategori setelah kembali dari AddCategoriesView
                       controller.loadCategories();
-                      Navigator.pop(context); // Tutup BottomSheet
+                      Get.back();
                     },
                     child: Text(
                       'Add Category',
@@ -64,8 +62,10 @@ class AddExpenses extends StatelessWidget {
                           ),
                         ),
                         TextButton(
-                          onPressed: () {
-                            Get.toNamed(Routes.CATEGORIES);
+                          onPressed: () async {
+                            await Get.to(() => const AddCategoriesView());
+                            controller.loadCategories();
+                            Get.back();
                           },
                           child: Text(
                             'Add Category',

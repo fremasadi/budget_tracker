@@ -1,11 +1,11 @@
 class Category {
-  final int? id; // id bisa null saat pembuatan
+  final int? id;
   final String name;
   final int color;
   final int icon;
 
   Category({
-    this.id, // id bisa null saat pembuatan
+    this.id,
     required this.name,
     required this.color,
     required this.icon,
@@ -13,7 +13,7 @@ class Category {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id, // id bisa null
+      'id': id,
       'name': name,
       'color': color,
       'icon': icon,

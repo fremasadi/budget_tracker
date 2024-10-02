@@ -1,11 +1,10 @@
 import 'package:get/get.dart';
-
-import '../modules/AddTransaction/bindings/add_transaction_binding.dart';
-import '../modules/AddTransaction/views/add_transaction_view.dart';
-import '../modules/HistoryTransaction/bindings/history_transaction_binding.dart';
-import '../modules/HistoryTransaction/views/history_transaction_view.dart';
+import '../modules/add_transaction/bindings/add_transaction_binding.dart';
+import '../modules/add_transaction/views/add_transaction_view.dart';
 import '../modules/categories/bindings/categories_binding.dart';
 import '../modules/categories/views/categories_view.dart';
+import '../modules/history_transaction/bindings/history_transaction_binding.dart';
+import '../modules/history_transaction/views/history_transaction_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/setting/bindings/setting_binding.dart';
@@ -48,7 +47,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.CATEGORIES,
-      page: () => CategoriesView(),
+      page: () => const CategoriesView(),
       binding: CategoriesBinding(),
     ),
   ];

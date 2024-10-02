@@ -22,14 +22,13 @@ class _CategoriesViewState extends State<CategoriesView> {
   @override
   void initState() {
     super.initState();
-    _loadCategories(); // Memuat kategori saat inisialisasi
+    _loadCategories();
   }
 
   Future<void> _loadCategories() async {
     final data = await _dbHelper.getCategories();
     setState(() {
       categories = data;
-      for (var category in categories) {}
     });
   }
 

@@ -8,14 +8,14 @@ import '../../../data/entities/icon_list.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/chart.dart';
 import '../../../data/models/transaction.dart';
-import 'package:budget_tracker/app/modules/HistoryTransaction/controllers/history_transaction_controller.dart';
 
 import '../../home/components/history_card.dart';
+import '../controllers/history_transaction_controller.dart';
 
 class HistoryTransactionIncome extends StatelessWidget {
   final HistoryTransactionController controller = Get.find();
 
-  HistoryTransactionIncome({Key? key}) : super(key: key);
+  HistoryTransactionIncome({super.key});
 
   @override
   Widget build(BuildContext context) {

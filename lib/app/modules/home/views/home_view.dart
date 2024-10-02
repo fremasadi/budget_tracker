@@ -76,7 +76,7 @@ class HomeView extends GetView<HomeController> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 33.0.sp),
                   child: Container(
-                    height: 230,
+                    height: 100.h,
                     decoration: BoxDecoration(
                         color: AppColors.primary.withOpacity(0.3),
                         borderRadius: BorderRadius.circular(22)),
@@ -211,7 +211,7 @@ class HomeView extends GetView<HomeController> {
           Padding(
             padding: EdgeInsets.only(left: 20.0.sp),
             child: Text(
-              'Expenses In Month',
+              'Expenses recently ',
               style: AppFonts.regular.copyWith(
                 fontSize: 22.sp,
                 color: AppColors.black,
@@ -220,7 +220,6 @@ class HomeView extends GetView<HomeController> {
           ),
           Expanded(
             child: Obx(() {
-              // Filter transactions to include only those with type 'expense'
               final expenses = controller.transactions
                   .where((transaction) => transaction.type == 'expense')
                   .toList();
@@ -234,7 +233,6 @@ class HomeView extends GetView<HomeController> {
                       controller.getCategoryByName(transaction.categoryName);
 
                   if (category == null) {
-                    // Jika kategori tidak ditemukan, tampilkan error atau placeholder
                     return const ListTile(
                       title: Text('Category not found'),
                     );
@@ -242,7 +240,7 @@ class HomeView extends GetView<HomeController> {
 
                   return HistoryCard(
                     transaction: transaction,
-                    category: category!,
+                    category: category,
                   );
                 },
               );

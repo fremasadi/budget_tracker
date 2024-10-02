@@ -6,13 +6,12 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../data/entities/icon_list.dart';
-import '../../../routes/app_pages.dart';
 import '../../../styles/app_fonts.dart';
 import '../../categories/views/add_categories_view.dart';
 import '../controllers/add_transaction_controller.dart';
 
-class AddIncome extends StatelessWidget {
-  const AddIncome({
+class AddExpenses extends StatelessWidget {
+  const AddExpenses({
     super.key,
     required this.controller,
   });
@@ -28,7 +27,7 @@ class AddIncome extends StatelessWidget {
           decoration: BoxDecoration(
               color: AppColors.white,
               borderRadius: BorderRadius.vertical(
-                top: Radius.circular(20),
+                top: Radius.circular(20.sp),
               )),
           child: Obx(
             () {
@@ -38,9 +37,8 @@ class AddIncome extends StatelessWidget {
                   child: TextButton(
                     onPressed: () async {
                       await Get.to(() => const AddCategoriesView());
-                      // Muat ulang kategori setelah kembali dari AddCategoriesView
                       controller.loadCategories();
-                      Navigator.pop(context); // Tutup BottomSheet
+                      Get.back();
                     },
                     child: Text(
                       'Add Category',
@@ -64,8 +62,10 @@ class AddIncome extends StatelessWidget {
                           ),
                         ),
                         TextButton(
-                          onPressed: () {
-                            Get.toNamed(Routes.CATEGORIES);
+                          onPressed: () async {
+                            await Get.to(() => const AddCategoriesView());
+                            controller.loadCategories();
+                            Get.back();
                           },
                           child: Text(
                             'Add Category',
@@ -85,15 +85,13 @@ class AddIncome extends StatelessWidget {
                           return ListTile(
                             leading: Container(
                               padding: EdgeInsets.all(8.0.sp),
-                              // Padding untuk ikon
                               decoration: BoxDecoration(
                                 color: Color(category.color).withOpacity(0.2),
-                                shape: BoxShape
-                                    .circle, // Bentuk lingkaran untuk ikon
+                                shape: BoxShape.circle,
                               ),
                               child: Icon(
                                 iconsList[category.icon],
-                                color: Color(category.color), // Warna ikon
+                                color: Color(category.color),
                               ),
                             ),
                             title: Text(
@@ -104,7 +102,7 @@ class AddIncome extends StatelessWidget {
                             ),
                             onTap: () {
                               controller.selectedCategory.value = category;
-                              Navigator.pop(context); // Tutup BottomSheet
+                              Navigator.pop(context);
                             },
                           );
                         },
@@ -145,10 +143,8 @@ class AddIncome extends StatelessWidget {
                 ),
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
-                  // Hanya izinkan input angka
                 ],
                 onChanged: (text) {
-                  // Ketika input berubah, kita panggil controller untuk memproses inputnya
                   controller.onTextChanged(text);
                 },
               ),

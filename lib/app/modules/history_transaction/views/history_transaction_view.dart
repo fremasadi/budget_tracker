@@ -1,19 +1,19 @@
-import 'package:budget_tracker/app/modules/AddTransaction/components/add_income.dart';
-import 'package:budget_tracker/app/styles/app_colors.dart';
-import 'package:budget_tracker/app/styles/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
-import '../../categories/views/add_categories_view.dart';
-import '../components/add_expense.dart';
-import '../controllers/add_transaction_controller.dart';
 
-class AddTransactionView extends GetView<AddTransactionController> {
-  const AddTransactionView({super.key});
+import 'package:get/get.dart';
+
+import '../../../styles/app_colors.dart';
+import '../../../styles/app_fonts.dart';
+import '../components/history_transaction_expenses.dart';
+import '../components/history_transaction_income.dart';
+import '../controllers/history_transaction_controller.dart';
+
+class HistoryTransactionView extends GetView<HistoryTransactionController> {
+  const HistoryTransactionView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    controller.loadCategories();
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -31,24 +31,52 @@ class AddTransactionView extends GetView<AddTransactionController> {
               ),
             ),
           ),
-          title: Text(
-            'Add Transaction',
-            style: AppFonts.semiBold.copyWith(
-              fontSize: 20.sp,
+          title: Container(
+            width: 250.w,
+            decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: AppColors.grey)),
+            child: Obx(
+              () {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: controller.previousMonth,
+                      icon: Icon(
+                        Icons.arrow_back_ios,
+                        size: 16.sp,
+                      ),
+                      color: AppColors.black,
+                    ),
+                    SizedBox(width: 8.w),
+                    Text(
+                      controller.selectedMonth.value,
+                      style: TextStyle(
+                          fontSize: 12.sp,
+                          color: AppColors.black,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(width: 8.w),
+                    IconButton(
+                      onPressed: controller.nextMonth,
+                      icon: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16.sp,
+                      ),
+                      color: AppColors.black,
+                    ),
+                  ],
+                );
+              },
             ),
           ),
           centerTitle: true,
           actions: [
-            TextButton(
-                onPressed: () {
-                  controller.saveTransaction();
-                },
-                child: Text(
-                  'Save',
-                  style: AppFonts.semiBold.copyWith(
-                    fontSize: 16.sp,
-                  ),
-                ))
+            SizedBox(
+              width: 30.w,
+            )
           ],
         ),
         body: Column(
@@ -111,8 +139,8 @@ class AddTransactionView extends GetView<AddTransactionController> {
             Expanded(
               child: TabBarView(
                 children: [
-                  AddExpenses(controller: controller),
-                  AddIncome(controller: controller),
+                  HistoryTransactionExpenses(),
+                  HistoryTransactionIncome(),
                 ],
               ),
             ),

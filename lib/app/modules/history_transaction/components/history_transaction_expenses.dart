@@ -8,25 +8,22 @@ import '../../../data/entities/icon_list.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/chart.dart';
 import '../../../data/models/transaction.dart';
-import 'package:budget_tracker/app/modules/HistoryTransaction/controllers/history_transaction_controller.dart';
 
 import '../../home/components/history_card.dart';
+import '../controllers/history_transaction_controller.dart';
 
 class HistoryTransactionExpenses extends StatelessWidget {
   final HistoryTransactionController controller = Get.find();
 
-  HistoryTransactionExpenses({Key? key}) : super(key: key);
+  HistoryTransactionExpenses({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Load transactions based on the selected month
     controller.loadTransactions();
 
     return Obx(() {
-      // Convert selectedMonth to DateTime
       DateTime selectedDate = controller.getSelectedMonthDate();
 
-      // Filter transactions based on the selected month
       List<Transaction> expenses = controller.transactions
           .where((transaction) =>
               transaction.type == 'expense' &&
@@ -35,7 +32,6 @@ class HistoryTransactionExpenses extends StatelessWidget {
           .toList();
 
       if (expenses.isEmpty) {
-        // If no expenses, show the "No Expenses Data Available" message
         return Center(
           child: Text(
             "No Expenses Data Available",
@@ -44,12 +40,10 @@ class HistoryTransactionExpenses extends StatelessWidget {
         );
       }
 
-      // Map to get category data
       Map<String, Category> categoryMap = {
         for (var category in controller.categories) category.name: category
       };
 
-      // Calculate totals and prepare chart data
       Map<String, double> categoryTotals = {};
       double totalExpenses = 0;
 
@@ -62,7 +56,6 @@ class HistoryTransactionExpenses extends StatelessWidget {
         );
       }
 
-      // Prepare chart data
       List<ChartData> chartData = categoryTotals.entries.map((entry) {
         double percentage = (entry.value / totalExpenses) * 100;
         Category category = categoryMap[entry.key]!;
@@ -71,23 +64,20 @@ class HistoryTransactionExpenses extends StatelessWidget {
             .firstWhere((e) => e.categoryName == entry.key)
             .categoryColor;
 
-        // Convert color from String to int (ARGB format)
         int categoryColorInt = int.parse(categoryColorString);
 
-        // Convert integer ARGB to Color
         Color color = Color(categoryColorInt);
 
         return ChartData(
           category: entry.key,
           percentage: percentage,
           color: color,
-          icon: iconsList[category.icon], // Map category.icon to IconData
+          icon: iconsList[category.icon],
         );
       }).toList();
 
       return Column(
         children: [
-          // Show chart only if there are expenses
           SfCircularChart(
             series: <CircularSeries>[
               DoughnutSeries<ChartData, String>(
@@ -104,7 +94,7 @@ class HistoryTransactionExpenses extends StatelessWidget {
                   labelIntersectAction: LabelIntersectAction.shift,
                   useSeriesColor: true,
                   angle: 0,
-                  connectorLineSettings: ConnectorLineSettings(
+                  connectorLineSettings: const ConnectorLineSettings(
                     width: 0,
                   ),
                   margin: EdgeInsets.only(bottom: 8.sp),
