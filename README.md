@@ -6,7 +6,7 @@ Budget Tracker adalah aplikasi pencatatan keuangan sederhana yang membantu pengg
 
 Lihat video demo aplikasi Budget Tracker di YouTube:
 
-[![Demo Video](https://img.youtube.com/vi/example123/0.jpg)](https://youtu.be/Y_XdX8MRoOU)
+[![Demo Video](https://img.youtube.com/vi/youtu.be/Y_XdX8MRoOU/0.jpg)](https://youtu.be/Y_XdX8MRoOU)
 
 Klik pada gambar di atas atau kunjungi langsung [Demo Video YouTube](https://youtu.be/Y_XdX8MRoOU).
 
