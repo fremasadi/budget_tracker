@@ -2,6 +2,14 @@
 
 Budget Tracker adalah aplikasi pencatatan keuangan sederhana yang membantu pengguna dalam mengelola pemasukan dan pengeluaran. Aplikasi ini juga menyediakan fitur kategori yang dapat disesuaikan oleh pengguna, riwayat transaksi, serta notifikasi pengingat untuk mencatat transaksi secara berkala.
 
+## Demo Video
+
+Klik gambar di bawah untuk melihat demo video di YouTube:
+
+[![Demo Video](https://img.youtube.com/vi/abcd1234/0.jpg)]([https://www.youtube.com/watch?v=abcd1234](https://youtu.be/Y_XdX8MRoOU))
+
+
+
 ## Fitur Utama
 
 1. **Pencatatan Pemasukan dan Pengeluaran**: 
